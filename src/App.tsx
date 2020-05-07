@@ -1,24 +1,38 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useEffect, useState } from 'react';
 import './App.css';
+import Rowma from 'rowma_js';
 
 function App() {
+  const [rowma, setRowma] = useState<any>(null);
+  const [socket, setSocket] = useState<any>(null);
+  const [robotUuids, setRobotUuids] = useState<Array<string>>([]);
+  const [selectedRobotUuid, setSelectedRobotUuid] = useState<string>('');
+
+  useEffect(() => {
+    const _rowma = new Rowma();
+    setRowma(_rowma);
+
+    _rowma.currentConnectionList().then((connList: any) => {
+      setRobotUuids(connList.data.map((robot: any) => robot.uuid));
+    })
+  }, [])
+
+  const handleConnectionListChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedRobotUuid(event.target.value)
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <select onChange={handleConnectionListChange}>
+        <option value=''>{''}</option>
+        {robotUuids.length > 0 && (
+          robotUuids.map((uuid: string) => {
+            return(
+              <option key={uuid} value={uuid}>{uuid}</option>
+            )
+          })
+        )}
+      </select>
     </div>
   );
 }
