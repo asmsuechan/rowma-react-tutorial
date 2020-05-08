@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import './App.css';
-import Rowma from 'rowma_js';
+import Rowma, { Topic } from 'rowma_js';
 
 function App() {
   const [rowma, setRowma] = useState<any>(null);
-  const [socket, setSocket] = useState<any>(null);
   const [robotUuids, setRobotUuids] = useState<Array<string>>([]);
   const [selectedRobotUuid, setSelectedRobotUuid] = useState<string>('');
 
@@ -28,9 +27,8 @@ function App() {
   }
 
   const handleConnectClicked = () => {
-    rowma.connect(selectedRobotUuid).then((sock: any) => {
-      setSocket(sock)
-      sock.on('topic_to_device', handleTopicArrival)
+    rowma.connect(selectedRobotUuid).then(() => {
+      rowma.topicListener(handleTopicArrival)
     }).catch((e: any) => {
       console.log(e)
     })
@@ -53,14 +51,15 @@ function App() {
         "data": `[${currentTime.toUTCString()}] Topic from browser!`
       }
     }
-    rowma.publishTopic(socket, selectedRobotUuid, msg)
+    rowma.publishTopic(selectedRobotUuid, msg)
   }
 
   const handleSubscribeButtonClick = () => {
-    rowma.subscribeTopic(socket, selectedRobotUuid, 'application', rowma.uuid, selectedTopicName);
+    rowma.subscribeTopic(selectedRobotUuid, 'application', rowma.uuid, selectedTopicName);
   }
 
-  const handleTopicArrival = (event: any) => {
+  const handleTopicArrival = (event: Topic) => {
+    console.log(event)
     setReceivedTopics(topics => [...topics, JSON.stringify(event.msg)])
   }
 
