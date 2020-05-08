@@ -10,6 +10,8 @@ function App() {
 
   const [robot, setRobot] = useState<any>(null);
 
+  const [selectedTopicName, setSelectedTopicName] = useState<string>('');
+
   useEffect(() => {
     const _rowma = new Rowma();
     setRowma(_rowma);
@@ -37,6 +39,18 @@ function App() {
 
   const handleRostopicChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     console.log(event)
+    setSelectedTopicName(event.target.value)
+  }
+
+  const handlePublishTopic = () => {
+    const msg = {
+      "op": "publish",
+      "topic": selectedTopicName,
+      "msg": {
+        "data": "Topic from browser!"
+      }
+    }
+    rowma.publishTopic(socket, selectedRobotUuid, msg)
   }
 
   return (
@@ -69,6 +83,11 @@ function App() {
       	  </select>
         )}
       </div>
+      {selectedTopicName && (
+        <button onClick={handlePublishTopic}>
+          Publish
+        </button>
+      )}
     </div>
   );
 }
