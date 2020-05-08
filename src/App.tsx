@@ -12,6 +12,8 @@ function App() {
 
   const [selectedTopicName, setSelectedTopicName] = useState<string>('');
 
+  const [receivedTopics, setReceivedTopics] = useState<Array<string>>([]);
+
   useEffect(() => {
     const _rowma = new Rowma();
     setRowma(_rowma);
@@ -28,6 +30,7 @@ function App() {
   const handleConnectClicked = () => {
     rowma.connect(selectedRobotUuid).then((sock: any) => {
       setSocket(sock)
+      sock.on('topic_to_device', handleTopicArrival)
     }).catch((e: any) => {
       console.log(e)
     })
@@ -38,19 +41,27 @@ function App() {
   }
 
   const handleRostopicChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    console.log(event)
     setSelectedTopicName(event.target.value)
   }
 
   const handlePublishTopic = () => {
+    const currentTime = new Date()
     const msg = {
       "op": "publish",
       "topic": selectedTopicName,
       "msg": {
-        "data": "Topic from browser!"
+        "data": `[${currentTime.toUTCString()}] Topic from browser!`
       }
     }
     rowma.publishTopic(socket, selectedRobotUuid, msg)
+  }
+
+  const handleSubscribeButtonClick = () => {
+    rowma.subscribeTopic(socket, selectedRobotUuid, 'application', rowma.uuid, selectedTopicName);
+  }
+
+  const handleTopicArrival = (event: any) => {
+    setReceivedTopics(topics => [...topics, JSON.stringify(event.msg)])
   }
 
   return (
@@ -84,10 +95,20 @@ function App() {
         )}
       </div>
       {selectedTopicName && (
-        <button onClick={handlePublishTopic}>
-          Publish
-        </button>
+        <div>
+          <button onClick={handlePublishTopic}>
+            Publish
+          </button>
+          <button onClick={handleSubscribeButtonClick}>
+            Start Subscribe
+          </button>
+        </div>
       )}
+      {receivedTopics.map((topic: string, index: number) => (
+        <div key={index}>
+          <span>{topic}</span>
+        </div>
+      ))}
     </div>
   );
 }
