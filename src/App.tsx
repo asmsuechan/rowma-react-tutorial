@@ -28,7 +28,7 @@ function App() {
 
   const handleConnectClicked = () => {
     rowma.connect(selectedRobotUuid).then(() => {
-      rowma.topicListener(handleTopicArrival)
+      rowma.subscribe('/chatter', handleTopicArrival)
     }).catch((e: any) => {
       console.log(e)
     })
@@ -55,7 +55,7 @@ function App() {
   }
 
   const handleSubscribeButtonClick = () => {
-    rowma.subscribeTopic(selectedRobotUuid, 'application', rowma.uuid, selectedTopicName);
+    rowma.setTopicRoute(selectedRobotUuid, 'application', rowma.uuid, selectedTopicName);
   }
 
   const handleTopicArrival = (event: Topic) => {
