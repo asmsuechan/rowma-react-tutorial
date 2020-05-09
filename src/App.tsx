@@ -27,11 +27,7 @@ function App() {
   }
 
   const handleConnectClicked = () => {
-    rowma.connect(selectedRobotUuid).then(() => {
-      rowma.subscribe('/chatter', handleTopicArrival)
-    }).catch((e: any) => {
-      console.log(e)
-    })
+    rowma.connect(selectedRobotUuid)
 
     rowma.getRobotStatus(selectedRobotUuid).then((res: any) => {
       setRobot(res.data)
@@ -56,6 +52,7 @@ function App() {
 
   const handleSubscribeButtonClick = () => {
     rowma.setTopicRoute(selectedRobotUuid, 'application', rowma.uuid, selectedTopicName);
+    rowma.subscribe(selectedTopicName, handleTopicArrival)
   }
 
   const handleTopicArrival = (event: Topic) => {
