@@ -27,7 +27,7 @@ function App() {
   }
 
   const handleConnectClicked = () => {
-    rowma.connect(selectedRobotUuid)
+    rowma.connect()
 
     rowma.getRobotStatus(selectedRobotUuid).then((res: any) => {
       setRobot(res.data)
