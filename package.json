@@ -13,7 +13,7 @@
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-scripts": "3.4.1",
-    "rowma_js": "^1.1.6",
+    "rowma_js": "^1.1.7",
     "typescript": "~3.7.2"
   },
   "scripts": {
